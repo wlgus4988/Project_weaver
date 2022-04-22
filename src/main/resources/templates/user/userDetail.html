@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!-- 타임리프 / 레이아웃 : default -->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns = "http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<!-- index.html 고유 CSS 추가 -->
+<link href="/css/styles.css" rel="stylesheet" />
+
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+</th:block>
+
+<header th:replace="fragments/menu :: menuFragment"></header>
+
+<div layout:fragment="content" style="padding: 100px 1px 2px 3px;">
+    <div class="container" style="">
+        <p>
+        <h1>마이페이지</h1>
+        <form >
+            <table style="text-align:center; margin:auto;">
+                <tr>
+                    <th style="letter-spacing:1px">ID</th>
+                    <td th:text="${users.username}"/></td>
+
+                </tr>
+                <tr>
+                    <th style="letter-spacing:1px">password</th>
+                    <td/>****</td>
+                </tr>
+                <tr>
+                    <th style="letter-spacing:1px">name</th>
+                    <td th:text = "${users.name}"/></td>
+                </tr>
+                <tr>
+                    <th style="letter-spacing:1px">E-mail</th>
+                    <td th:text = "${users.email}"/></td>
+                </tr>
+                <tr>
+                    <th style="letter-spacing:1px">role</th>
+                    <td th:text = "${users.role}"/></td>
+
+                </tr>
+            </table>
+            <div style="margin-top: 30px; padding-bottom: 100px">
+                <a href="/user/userUpdate/"
+                   class="btn btn-outline-primary"
+                   th:attrappend="href=${users.username}">수정</a>
+                <a href="/home" class="btn btn-outline-primary">취소</a>
+            </div>
+        </form>
+    </div>
+</div>
+</html>

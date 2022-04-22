@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- 타임리프 / 레이아웃 : default -->
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<link href="/css/styles.css" rel="stylesheet"/>
+<header th:replace="fragments/menu :: menuFragment"></header>
+
+<div layout:fragment="content" style="padding: 100px 1px 2px 3px;">
+
+    <div class="container">
+        <h2>사용자 상세</h2>
+
+        <form>
+            <table style="text-align: center; margin: auto;">
+                <tr>
+                    <th style="letter-spacing: 1px">ID</th>
+					<td th:text="${user.username}"></td>
+                </tr>
+                <tr>
+                    <th style="letter-spacing: 1px">password</th>
+					<td>****</td>
+                </tr>
+                <tr>
+                    <th style="letter-spacing: 1px">name</th>
+                    <td th:text="${user.name}"></td>
+                </tr>
+                <tr>
+                    <th style="letter-spacing: 1px">E-mail</th>
+					<td th:text="${user.email}"></td>
+                </tr>
+                <tr>
+					<th style="letter-spacing: 1px">role</th>
+					<td th:text="${user.role}"></td>
+                </tr>
+            </table>
+            <span><a href="/user/userUpdate/admin/"
+                     class="btn btn-outline-primary"
+                     th:attrappend="href=${user.username}">수정하기</a>
+					<a href="/user/userDelete/admin/" class="btn btn-outline-primary"
+                       th:attrappend="href=${user.username}" onclick="return confirm('글을 삭제하시겠습니까?');">삭제하기</a>
+				</span>
+        </form>
+		<a class="btn btn-outline-primary" id="list_btn" name="list_btn"
+		   style="float: right;" th:href="@{/user/userList/admin(page=${session.uPage}, searchText=${session.uSearchText})}">목록으로</a>
+    </div>
+    </form>
+</div>
+</div>
+</html>

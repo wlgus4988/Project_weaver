@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav" style="min-height: 100px;"
+     th:fragment="menuFragment">
+    <div class="container" th:if="${#strings.equals(session.role,'ROLE_MEMBER')}">
+        <a class="navbar-brand" href="#page-top" style="font-size: 28px">게시판</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars ms-1"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0" id="main-menu">
+                <li class="nav-item"><a class="nav-link active"
+                                        aria-current="page" href="/home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/board/boardList/전체 게시판">전체 게시판</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">기타게시판</a>
+                    <ul style="border-color: #797f84;background-color: #797f84;" id="sub-menu">
+                        <li th:each="li : ${session.CList}"><a th:href="'/board/boardList/'+ ${li.boardName}" class="nav-link" th:text="${li.boardName}"></a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div> &nbsp;&nbsp;&nbsp;
+        <a th:href="@{/user/userDetail/{username}(username=${session.username})}" th:text="${session.username}+'님'"></a>
+        &nbsp;&nbsp;&nbsp;
+        <button class="btn btn-outline-danger btn-sm" type="button">
+            <a th:href="@{/login/logout}" class="text-white">로그아웃</a>
+        </button>
+    </div>
+
+    <div class="container" th:if="${#strings.equals(session.role,'ROLE_ADMIN')}">
+        <a class="navbar-brand" href="#page-top" style="font-size: 28px">게시판</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars ms-1"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+                <li class="nav-item"><a class="nav-link active"
+                                        aria-current="page" href="/home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admin/boardList">게시판 관리</a></li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="/user/userList/admin">사용자
+                    목록</a></li>
+            </ul>
+        </div> &nbsp;&nbsp;&nbsp;
+        <button class="btn btn-outline-danger btn-sm" type="button">
+            <a th:href="@{/login/logout}" class="text-white">로그아웃</a>
+        </button>
+    </div>
+</nav>
+
+
+<script type="text/javascript">
+    function t() {
+        var userInput = prompt("추가할 게시판 명을 입력해주세요" + "");
+        if (userInput == null) {
+            return false;
+        } else {
+            alert(userInput);
+            return true;
+        }
+    }
+</script>
+
+</html>

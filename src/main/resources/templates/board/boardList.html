@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<link href="/css/styles.css" rel="stylesheet"/>
+<header th:replace="fragments/menu :: menuFragment"></header>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<script>
+
+   /* function write(boardName) {
+        $.ajax({
+            url: '/board/boardWrite',
+            data: boardName,
+            type: "POST",
+            success: function (data) {
+            }
+        });
+    }*/
+
+</script>
+
+<div layout:fragment="content" style="padding: 100px 1px 2px 3px;">
+
+    <div class="container">
+        <h2 th:text="${boardName}"></h2>
+        <table class="table table-hover" style="text-align:center; table-layout:fixed">
+            <colgroup>
+                <col width="18%"/>
+                <col width="*"/>
+                <col width="18%"/>
+                <col width="12%"/>
+                <col width="12%"/>
+                <col width="8%"/>
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col">글 번호</th>
+                <th scope="col">제목</th>
+                <th scope="col">조회수</th>
+                <th scope="col">작성자</th>
+                <th scope="col">작성일</th>
+                <th scope="col">파일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.size(list)} > 0" th:each="vo, i : ${list}">
+                <td th:text="${num - (i.count + page) + 1}"></td>
+                <td style="text-align:left;">
+                    <!--<form>
+                                        <a
+                                                th:href="@{/board/boardDetail/{boardIdx}(boardIdx=${vo.boardIdx})}"
+                                                th:utext="${vo.title}"
+                                                style="overflow:hidden;white-space:pre;text-overflow:ellipsis;text-decoration : none;"></a>
+                    </form>-->
+                    <form th:action="'/board/boardDetail/'+${boardName}+'/'+${vo.boardIdx} " method="POST">
+
+                        <input type="hidden" name="page" id="page" th:value="${list.pageable.pageNumber}">
+                        <input type="hidden" name="search" id="search" th:value="${param.searchText}">
+                        <input type="submit" th:value="${vo.title}"
+                               style="overflow:hidden;white-space:pre;text-overflow:ellipsis;text-decoration : underline;
+                               border-color: WHITE;
+                               border-style: hidden;
+                               background-color: transparent; color:#4a85d4">
+                    </form>
+                </td>
+                <td th:text="${vo.hitCnt}"></td>
+                <td th:text="${vo.username}"
+                    style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
+                <td th:text="${vo.createDatetime}"
+                    style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
+                <td><img th:if="${vo.filesCount != 0} and ${vo.deleteYN == 'N'}" src="/img/file.jpg"
+                         style="width:20px; height:auto; vertical-align: center; "/></td>
+            </tr>
+            <tr th:if="${listSize == 0}">
+                <td colspan="6">조회된 결과가 없습니다.</td>
+            </tr>
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation example" th:if="${num > 0}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"
+                    th:classappend="${1 == list.pageable.pageNumber + 1} ? 'disabled'">
+                    <a class="page-link" href="#"
+                       th:href="@{/board/boardList/{boardName}(boardName =${boardName},page=${list.pageable.pageNumber - 1},searchText=${param.searchText})}"
+                       tabindex="-1" aria-disabled="true">&lt;</a>
+                </li>
+                <li class="page-item"
+                    th:classappend="${i == list.pageable.pageNumber + 1} ? 'disabled'"
+                    th:each="i : ${#numbers.sequence(startPage, endPage)}"><a
+                        class="page-link" href="#"
+                        th:href="@{/board/boardList/{boardName}(boardName =${boardName},page=${i - 1}, searchText = ${param.searchText})}"
+                        th:text="${i}">1</a></li>
+                <li class="page-item"
+                    th:classappend="${list.totalPages == list.pageable.pageNumber + 1} ? 'disabled'">
+                    <a class="page-link" href="#"
+                       th:href="@{/board/boardList/{boardName}(boardName =${boardName}, page=${list.pageable.pageNumber + 1}, searchText=${param.searchText})}">&gt;</a>
+                </li>
+            </ul>
+        </nav>
+
+        <form action="/board/boardWrite" method="POST">
+            <input type="hidden" name="boardName_" id="boardName_" th:value="${boardName}">
+            <button type="submit"
+                    class="btn btn-outline-primary">글 작성하기
+            </button>
+        </form>
+
+       <!-- <a href ="#" onclick = "write(this.getAttribute('data-parameter'));" th:data-parameter = "${boardName}">글 작성하기 ajax</a>-->
+
+        <form class="d-flex" method="GET" th:action="@{/board/boardList/{boardName}(boardName = ${boardName})}"
+              style="padding-bottom: 100px">
+            <input class="form-control me-2" type="search" placeholder="Search"
+                   id="searchText" name="searchText" aria-label="Search"
+                   style="width: 230px" th:value="${param.searchText}">
+            <button class="btn btn-light me-2" type="submit">Search</button>
+        </form>
+
+    </div>
+</div>
+</html>

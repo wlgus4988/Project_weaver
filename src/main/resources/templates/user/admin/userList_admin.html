@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!-- 타임리프 / 레이아웃 : default -->
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<link href="/css/styles.css" rel="stylesheet"/>
+<header th:replace="fragments/menu :: menuFragment"></header>
+
+<div layout:fragment="content" style="padding: 100px 1px 2px 3px;">
+
+    <div class="container">
+        <h2>사용자 리스트</h2>
+
+        <table class="table table-hover" style="text-align:center; table-layout:fixed">
+            <colgroup>
+                <col width="14%"/>
+                <col width="*%"/>
+                <col width="15%"/>
+                <col width="20%"/>
+                <col width="15%"/>
+                <col width="12%"/>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>아이디</th>
+                <th>패스워드</th>
+                <th>이름</th>
+                <th>이메일</th>
+                <th>권한</th>
+                <th>가입일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.size(list)} > 0" th:each="vo: ${list}">
+<td>
+				<form th:action="'/user/userDetail/admin/' + ${vo.username}" method="POST">
+
+					<input type="hidden" name="page" id="page" th:value="${list.pageable.pageNumber}">
+					<input type="hidden" name="search" id="search" th:value="${param.searchText}">
+
+					<input type="submit" th:value="${vo.username}"
+						   style="overflow:hidden;white-space:pre;text-overflow:ellipsis;text-decoration : underline;
+                               border-color: WHITE;
+                               border-style: hidden;
+                               background-color: transparent; color:#4a85d4">
+				</form>
+</td>
+                <td th:text="${vo.pw}" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
+                <td th:text="${vo.name}" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
+                <td th:text="${vo.email}" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
+                <td th:text="${vo.role}" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
+                <td th:text="${vo.joinDate}" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
+            </tr>
+            <tr th:if="${num == 0}">
+                <td colspan="6">조회된 결과가 없습니다.</td>
+            </tr>
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation example" th:if="${num > 0}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"
+                    th:classappend="${1 == list.pageable.pageNumber + 1} ? 'disabled'">
+                    <a class="page-link" href="#"
+                       th:href="@{/user/userList/admin(page=${list.pageable.pageNumber - 1},searchText=${param.searchText})}"
+                       tabindex="-1" aria-disabled="true">&lt;</a>
+                </li>
+                <li class="page-item"
+                    th:classappend="${i == list.pageable.pageNumber + 1} ? 'disabled'"
+                    th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                    <a class="page-link" href="#"
+                       th:href="@{/user/userList/admin(page=${i - 1}, searchText = ${param.searchText})}"
+                       th:text="${i}">1</a></li>
+                <li class="page-item"
+                    th:classappend="${list.totalPages == list.pageable.pageNumber + 1} ? 'disabled'">
+                    <a class="page-link" href="#"
+                       th:href="@{/user/userList/admin(page=${list.pageable.pageNumber + 1}, searchText=${param.searchText})}">&gt;</a>
+                </li>
+            </ul>
+        </nav>
+
+        <form class="d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-primary">
+                <a href="/user/userInsert/admin">사용자 추가</a>
+            </button>
+        </form>
+        <form class="d-flex" method="GET" th:action="@{/user/userList/admin}" style="padding-bottom: 100px">
+            <input class="form-control me-2" type="search" placeholder="Search"
+                   id="searchText" name="searchText" aria-label="Search"
+                   style="width: 230px" th:value="${param.searchText}">
+            <button class="btn btn-light me-2" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+</html>

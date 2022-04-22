@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<link href="/css/styles.css" rel="stylesheet"/>
+<header th:replace="fragments/menu :: menuFragment"></header>
+
+<div layout:fragment="content" style="padding: 100px 1px 2px 3px;">
+    <div class="container" style="font-size: 50px" th:if="${#strings.equals(session.role,'ROLE_MEMBER')}">
+        사용자 메인 페이지 입니다
+    </div>
+    <div class="container" style="font-size: 50px" th:if="${#strings.equals(session.role,'ROLE_ADMIN')}">
+        관리자 메인 페이지 입니다
+    </div>
+</div>
+</html>

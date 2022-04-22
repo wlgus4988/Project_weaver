@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<!-- index.html 고유 CSS 추가 -->
+<link href="/css/styles.css" rel="stylesheet"/>
+
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+</th:block>
+
+<header th:replace="fragments/menu :: menuFragment"></header>
+
+<div layout:fragment="content" style="padding: 100px 1px 2px 3px;">
+
+    <div class="container">
+        <div class="board_div">
+            <h2 class="page-header">Update</h2>
+            <form class="form" id="boardSearchVO" name="boardSearchVO">
+                <input type="hidden" id="pageIndex" name="pageIndex" value="${boardSearchVO.pageIndex}"/>
+                <input type="hidden" id="pageSize" name="pageSize" value="${boardSearchVO.pageSize}"/>
+                <input type="hidden" id="bbs_sno" name="bbs_sno" value="${boardSearchVO.bbs_sno}"/>
+                <input type="hidden" id="usr_id" name="usr_id" value="${boardSearchVO.usr_id}"/>
+                <!--<input type="hidden" id="title" name="title" value="${boardSearchVO.title}"/>-->
+            </form>
+
+            <form role="form" th:method="POST"
+                  th:action="'/user/userUpdate/' + ${users.username}"
+                  onsubmit="return nullChk()">
+                <table style="text-align:center; margin:auto;">
+                    <tr>
+                        <th style="letter-spacing:1px">ID</th>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text"
+                                                                 id="username" name="username"
+                                                                 th:value="${users.username}"
+                                                                 disabled='disabled'/></td>
+
+                    </tr>
+                    <tr>
+                        <th style="letter-spacing:1px">password</th>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="password" id="pw"
+                                                                 name="pw" value="****" /></td>
+                    </tr>
+                    <tr>
+                        <th style="letter-spacing:1px">name</th>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="name"
+                                                                 name="name" th:value="${users.name}"/></td>
+                    </tr>
+                    <tr>
+                        <th style="letter-spacing:1px">E-mail</th>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text"
+                                                                 id="email" name="email" th:value="${users.email}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="letter-spacing:1px">role</th>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="role"
+                                                                 name="role" th:value="${users.role}"
+                                                                 disabled='disabled'/></td>
+
+                    </tr>
+                </table>
+                <div style="margin-top: 30px; padding-bottom: 100px">
+                    <input type="submit" id="submit" value="저장" class="btn btn-outline-primary"/>
+                    &nbsp;&nbsp;
+                    <a href="/user/userDetail/" th:attrappend="href=${users.username}" class="btn btn-outline-primary">취소</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="javascript">
+    function nullChk() {
+        var name = document.getElementById("name").value;
+        var email = document.getElementById("email").value;
+        if (!email || !name) {
+            alert('공백 없이 입력해주세요')
+            return false;
+        } else {
+            return true;
+        }
+    }
+</script>
+</html>
