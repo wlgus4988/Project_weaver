@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.example.test.coupang.mybatis.mapper.CateMapper">
+    <select id="findAll" resultType="com.example.test.coupang.mybatis.dto.CateDto">
+        SELECT * FROM COUPANG_CATEGORY where CATE_NAME LIKE '%' ||  #{searchText} || '%' AND DELETEYN='N' START WITH P_IDX = 0 CONNECT BY PRIOR IDX = P_IDX order siblings by GROUP_NUM desc
+    </select>
+
+    <select id="findGroupNum" resultType="java.lang.Long">
+        select GROUP_NUM from COUPANG_CATEGORY where P_IDX = 0
+    </select>
+
+    <select id="findGroupIdx" resultType="java.lang.Long">
+        select GROUP_IDX from COUPANG_CATEGORY where P_IDX = #{pIdx}
+    </select>
+
+    <select id="findByPIdx" resultType="com.example.test.coupang.mybatis.dto.CateDto">
+        select *  from COUPANG_CATEGORY where P_IDX = #{pIdx} AND DELETEYN='N'
+    </select>
+
+    <update id="cateNameUpdate">
+    UPDATE COUPANG_CATEGORY SET CATE_NAME = #{cateUpdateName} WHERE CATE_NAME = #{cateName}
+</update>
+
+    <update id="cateDelete">
+        UPDATE COUPANG_CATEGORY SET deleteYN = 'Y' WHERE IDX = #{idx}
+    </update>
+
+    <select id="findByDepth" parameterType="long" resultType="com.example.test.coupang.mybatis.dto.CateDto">
+
+        SELECT * FROM COUPANG_CATEGORY where depth = #{depth} order by GROUP_NUM asc
+    </select>
+    <select id="pCateName" resultType="String">
+        SELECT CATE_NAME FROM COUPANG_CATEGORY where GROUP_NUM = #{groupNum} AND IDX = #{idx}
+    </select>
+    <select id="CateName" resultType="String">
+       SELECT CATE_NAME FROM COUPANG_CATEGORY where IDX = #{idx}
+    </select>
+
+    <select id="findById" resultType="com.example.test.coupang.mybatis.dto.CateDto">
+        select *  from COUPANG_CATEGORY where IDX = #{idx} AND DELETEYN='N'
+    </select>
+
+<insert id="cateSave" parameterType="com.example.test.coupang.mybatis.dto.CateDto">
+    <selectKey keyProperty="idx" resultType="java.lang.Long" order="BEFORE">
+        select COUPANG_CATE_SEQ.NEXTVAL from dual
+    </selectKey>
+
+    INSERT INTO COUPANG_CATEGORY
+        (IDX, CATE_NAME, "DEPTH", GROUP_IDX, GROUP_NUM, P_IDX, DELETEYN)
+    VALUES(#{idx}, #{cateName},#{depth} , #{groupIdx}, #{groupNum}, #{pIdx}, 'N')
+
+</insert>
+
+
+</mapper>

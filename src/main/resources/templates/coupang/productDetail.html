@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+
+<meta charset="UTF-8">
+<title>Title</title>
+<link href="/css/styles.css" rel="stylesheet"/>
+
+<!-- include libraries(jQuery, bootstrap) -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<!-- include summernote css/js -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $('#contents').summernote();
+    });
+
+
+</script>
+
+<header th:replace="fragments/menu :: menuFragment"></header>
+
+<div layout:fragment="content" style="padding: 100px 1px 2px 3px;">
+    <div class="container">
+        <h1>상품 상세</h1>
+        <table class="table table-hover" style="text-align: center;">
+            <colgroup>
+                <col width="*%"/>
+                <col width="10%"/>
+                <col width="23%"/>
+                <col width="23%"/>
+            </colgroup>
+            <tbody>
+            <tr>
+                <td rowspan="6"><img th:src="${productList.imageSrc}" style="width: auto; height: auto;"></td>
+                <td></td>
+                <th>상품 이름</th>
+                <td th:text="${productList.productName}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <th scope="row" class="col-sm-2 control-label">배송</th>
+                <td th:text="${productList.delivery}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <th scope="row" class="col-sm-2 control-label">가격</th>
+                <td th:text="${productList.productPrice - (productList.productPrice / 100 * productList.discount)}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <th scope="row">색상</th>
+                <td><select id="optionColor">
+                    <option th:each="i : ${optionColor}" th:value="${#strings.trim(i)}"
+                            th:text="${#strings.trim(i)}"></option>
+                </select></td>
+            </tr>
+            <tr>
+                <td></td>
+                <th scope="row">사이즈</th>
+                <td><select id="optionSize">
+                    <option th:each="i : ${optionSize}" th:value="${#strings.trim(i)}"
+                            th:text="${#strings.trim(i)}"></option>
+                </select></td>
+            </tr>
+            <!-- <tr>
+                 <td></td>
+                 <th scope="row">사이즈</th>
+                 <td><select>
+                     <option th:each="i : ${optionSize}" th:value="${#strings.trim(i)}"
+                             th:text="${#strings.trim(i)}"></option>
+                 </select></td>
+             </tr>-->
+            <tr>
+                <td></td>
+                <th scope="row">상품 타입</th>
+                <td><span th:each="vo, i: ${type} " th:text="${i.last} ? ${vo} : ${vo}+' | '"></span></td>
+            </tr>
+            <tr>
+                <td colspan="3" style="left: 10px"><img th:each=" vo : ${fileLi}"
+                                                        th:if="${#strings.equals(vo.mainImage,'N')}"
+                                                        th:src="${vo.storedFilePath}"
+                                                        style="width: 100px; height: 100px; margin-right: 10px;"></td>
+                <td>
+                    <button type="submit"
+                            class="btn btn-outline-primary" style="border-color: #adb5bd"
+                            th:data-parameter="${productList.productIdx}"
+                            onclick="stock(this.getAttribute('data-parameter'))"
+                    > 구 매 하 기
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4"
+                    id="productContents" name="productContents" th:utext="${productList.productContents}"
+                    style="width: 100%; height: 300px;">
+            </tr>
+            </tbody>
+
+        </table>
+        <br>
+        <div class="form-group">
+        <span th:if="${#strings.equals(session.role,'ROLE_ADMIN')}">
+                <a th:href="'/cate/productUpdate/'+${cateNum}+'/'+${productList.productIdx}"
+                   class="btn btn-outline-primary">수정하기</a>
+					<a th:href="'/cate/productDelete/'+${cateNum}+'/'+${productList.productIdx}"
+                       class="btn btn-outline-primary"
+                       onclick="return confirm('글을 삭제하시겠습니까?');">삭제하기</a>
+            <a th:href="'/cate/productStock/'+${cateNum}+'/'+${productList.productIdx}"
+               class="btn btn-outline-primary"
+            >재고관리</a>
+        </span>
+            <span>
+            <a class="btn btn-outline-primary"
+               style="float: right;"
+               th:href="@{/cate/List/{cateIdx}(cateIdx=${session.cateIdx},page=${session.LPage}, searchText=${session.LSearchText})}">목록으로</a>
+        </span>
+        </div>
+        <br>
+        <br>
+    </div>
+</div>
+</div>
+<script>
+    function stock(productIdx) {
+        var optionColor = document.getElementById("optionColor").value;
+        var optionSize = document.getElementById("optionSize").value;
+
+        if (confirm('구매하시겠습니까?')) {
+            $.ajax({
+                url: '/cate/productStock',
+                data: {productIdx: productIdx, optionColor: optionColor, optionSize: optionSize},
+                type: "POST",
+                success: function (data) {
+                    if (data == "OK") {
+                        alert("구매 완료되었습니다 !")
+                        window.location.reload();
+                    } else {
+                        alert("구매 실패, 해당 옵션은 품절되었습니다")
+                    }
+
+                }
+            });
+
+        } else {
+            return false;
+        }
+    }
+</script>
+</html>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.example.test.board.mybatis.mapper.boardMapper">
+
+    <select id="findByBoardIdx"
+            resultType="com.example.test.board.mybatis.dto.BoardDto" parameterType="long">
+
+
+                select *
+                From BOARD
+                where BOARD_IDX = #{pBoardIdx}
+
+
+    </select>
+
+    <select id="findAll"
+            resultType="com.example.test.board.mybatis.dto.BoardDto">
+
+
+            SELECT * FROM board where (USERNAME LIKE '%' ||  #{searchText} || '%' OR TITLE LIKE '%' ||  #{searchText} || '%') AND CATEGORY = #{boardName}
+                START WITH p_board_idx = 0 CONNECT BY PRIOR BOARD_IDX = P_BOARD_IDX order siblings by GROUP_NUM desc
+
+
+    </select>
+    <update id="boardSetHitCnt" parameterType="long">
+
+            UPDATE BOARD
+            SET HIT_CNT = HIT_CNT + 1
+            where BOARD_IDX = #{boardIdx}
+    </update>
+
+    <select id="selectGroupNum"
+            resultType="Long">
+
+        select GROUP_NUM
+        from BOARD
+        where P_BOARD_IDX = 0
+
+    </select>
+    <select id="findGroupIdx"
+            resultType="Long" parameterType="long">
+
+        select GROUP_NUM
+        from BOARD
+        where P_BOARD_IDX = #{pBoardIdx}
+
+    </select>
+
+    <insert id="boardSave" parameterType="com.example.test.board.mybatis.dto.BoardDto">
+
+        <!--<selectKey keyProperty="boardIdx" resultType="java.lang.Long" order="BEFORE">
+            select BOARD_SEQ.NEXTVAL from dual
+        </selectKey>-->
+        <![CDATA[
+        INSERT INTO BOARD
+        (BOARD_IDX, CATEGORY, CONTENTS, CREATE_DATETIME, DELETEYN, DEPTH, FILES_COUNT, GROUP_IDX, GROUP_NUM, HIT_CNT, P_BOARD_IDX, TITLE, USERNAME)
+        VALUES(#{boardIdx}, #{Category}, #{contents}, sysdate, 'N', #{depth}, #{filesCount}, #{groupIdx}, #{groupNum}, #{hitCnt}, #{pBoardIdx}, #{title}, #{username})
+
+]]>
+
+    </insert>
+    <update id="boardUpdate" parameterType="com.example.test.board.mybatis.dto.BoardDto">
+
+
+        UPDATE BOARD SET CONTENTS = #{contents}, TITLE = #{title}, FILES_COUNT = #{filesCount}
+        WHERE BOARD_IDX = #{boardIdx}
+
+
+    </update>
+    <update id="boardDelete" >
+
+           UPDATE BOARD SET DELETEYN = 'Y',TITLE = #{NL}||'삭제된 글입니다' WHERE BOARD_IDX = #{boardIdx}
+    </update>
+
+    <update id="deleteFile" >
+        UPDATE BOARD SET files_count = files_count-1 WHERE BOARD_IDX = #{boardIdx}
+
+    </update>
+
+    <select id="Seq" resultType="long">
+         select BOARD_SEQ.NEXTVAL from dual
+    </select>
+
+</mapper>

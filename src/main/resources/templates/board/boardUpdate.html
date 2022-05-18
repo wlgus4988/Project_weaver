@@ -89,31 +89,31 @@
     var fileList = new Array();
 
     function set(idx){
-        alert(idx)
         $('.' + idx).hide();
         fileList.push(idx);
-        console.log(fileList);
+        document.getElementById("fileLi").value = fileList;
+        console.log('값'+document.getElementById("fileLi").value);
     }
 
-
-
-
-
-    function f(idx, boardName, boardIdx) {
+   /* function f(idx, boardName, boardIdx) {
         $('.' + idx).hide();
-        fileList.push(idx);
+        /!*fileList.push(idx);
         console.log(fileList);
-        console.log(boardName);
+        console.log(boardName);*!/
+        var url = '/board/boardUpdate/'+decodeURIComponent(boardName)+'/'+boardIdx;
+        console.log(url);
         $.ajax({
-            url: '/board/boardUpdate/'+boardName+'/'+boardIdx,
-            data: {fileList : fileList},
+            url: url,
+            data : {fileIdx : idx},
             type: "POST",
-            contentType: "application/json; charset=UTF-8",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
             success: function (data) {
                 alert(idx);
             }
         });
-    }
+    }*/
 
 
 
@@ -149,7 +149,7 @@
                         <th scope="row">작성자</th>
                         <td th:text="${board.username}"></td>
                         <th scope="row">작성일</th>
-                        <td th:text="${board.createDatetime}"></td>
+                        <td th:text="${#dates.format(board.createDatetime,'yyyy-MM-dd HH:mm')}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -180,12 +180,13 @@
                                     onclick="fileDelete(this.getAttribute('data-parameter1'),this.getAttribute('data-parameter2'))">&nbsp;&nbsp;삭제</a>-->
                                 <a th:text="${vo.originalFileName}" th:class="${vo.idx}"></a><a th:class="${vo.idx}"
                                                                                                 th:data-parameter1="${vo.idx}" th:data-parameter2="${boardName}" th:data-parameter3="${board.boardIdx}"
-
-                                onclick = "f(this.getAttribute('data-parameter1'),this.getAttribute('data-parameter2'),this.getAttribute('data-parameter3'))"><!--onclick="set(this.getAttribute('data-parameter1'))"-->&nbsp;&nbsp삭제</a>
+                                                                                                onclick="set(this.getAttribute('data-parameter1'))">
+                                <!--onclick = "f(this.getAttribute('data-parameter1'),this.getAttribute('data-parameter2'),this.getAttribute('data-parameter3'))">-->&nbsp;&nbsp삭제</a>
                             </div>
                         </div>
                     </div>
                 </div>
+                <input type ="hidden" id ="fileLi" name ="fileLi" value ="">
                 <div class="pull-right"><input
                         type="submit" id="submit" value="저장" onclick="return confirm('글을 저장하시겠습니까?');"
                         class="btn btn-outline-primary" style="margin-right: 10px;">

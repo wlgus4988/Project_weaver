@@ -24,6 +24,9 @@ public class webConfiguration implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/summernoteImage/**")
                 .addResourceLocations("file:///C:/Users/weaver-gram-0014/Desktop/IMAGE/");
+
+        registry.addResourceHandler("/img/**")
+                .addResourceLocations("file:///C:/Users/weaver-gram-0014/Desktop/Project/src/main/resources/static/img/");
     }
 
 }

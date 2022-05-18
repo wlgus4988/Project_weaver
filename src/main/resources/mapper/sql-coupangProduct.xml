@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.example.test.coupang.mybatis.mapper.ListMapper">
+    <insert id="productSave" parameterType="com.example.test.coupang.mybatis.dto.ListDto">
+
+        INSERT INTO COUPANG_PRODUCT
+        (PRODUCT_IDX, DELETEYN, PRODUCT_CONTENTS, PRODUCT_NAME, CREATE_DATETIME, DELIVERY, PRODUCT_PRICE, USERNAME, DISCOUNT, <if test ="optionColor != ''"> OPTION_COLOR,</if> <if test ="optionSize != ''">OPTION_SIZE,</if> <if test ="productType != ''">PRODUCT_TYPE,</if> IMAGE_SRC, PRODUCT_CATEGORY_NUM)
+        VALUES(#{productIdx}, 'N' , #{productContents}, #{productName}, sysdate, #{delivery}, #{productPrice}, #{username}, #{discount}, <if test ="optionColor != ''">#{optionColor},</if>  <if test ="optionSize != ''">#{optionSize},</if> <if test ="productType != ''">#{productType},</if> #{ImageSrc}, #{productCategoryNum})
+
+    </insert>
+
+    <select id="findById" resultType="com.example.test.coupang.mybatis.dto.ListDto">
+
+        SELECT * FROM COUPANG_PRODUCT
+        WHERE PRODUCT_IDX = #{productIdx}
+    </select>
+
+    <update id="deleteById">
+        UPDATE COUPANG_PRODUCT SET DELETEYN = 'Y' WHERE PRODUCT_IDX = #{productIdx}
+    </update>
+
+    <select id="seq" resultType="long">
+         select COUPANG_PRODUCT_SEQ.NEXTVAL from dual
+    </select>
+
+    <select id="findAll" resultType="com.example.test.coupang.mybatis.dto.ListDto">
+        SELECT * FROM COUPANG_PRODUCT where PRODUCT_NAME LIKE '%' ||  #{searchText} || '%' AND PRODUCT_CATEGORY_NUM = #{idx}
+       <if test="proCateNum != null"> AND PRODUCT_TYPE Like '%' || #{proCateNum} || '%' </if>
+
+        order by PRODUCT_IDX desc
+
+    </select>
+
+</mapper>

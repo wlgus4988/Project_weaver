@@ -261,7 +261,8 @@ address {
 
 ol,
 ul {
-    padding-left: 2rem;
+    padding-left: 0rem;
+    text-align: center;
 }
 
 ol,
@@ -323,6 +324,9 @@ sup {
 
 a {
     color: #4a85d4;
+}
+li {
+    list-style: none;
 }
 
 a:hover {
@@ -11618,19 +11622,79 @@ p {
     background-color:green;
 }
 
-#main-menu > li {
+.main-menu > li {
     float: left;
 }
+.sub-menu > li {
+    float: bottom;
+}
+.sub-sub-menu > li{
+    float: bottom;
+}
+.sub-sub-sub-menu > li{
+    float: bottom;
+}
 
-#sub-menu {
+.main-menu > li:hover .sub-menu {
+    z-index: 1;
+    list-style: none;
+    opacity: 1;
+    visibility: visible;
+}
+
+.sub-menu > li:hover .sub-sub-menu {
+    z-index: 2;
+    list-style: none;
+    opacity: 1;
+    visibility: visible;
+}
+
+.sub-sub-menu > li:hover .sub-sub-sub-menu {
+    z-index: 3;
+    list-style: none;
+    opacity: 1;
+    visibility: visible;
+}
+
+.sub-menu  {
     list-style: none;
     position: absolute;
     opacity: 0;
     visibility: hidden;
 
+    z-index: 3;
 }
 
-#main-menu > li:hover #sub-menu {
+.sub-sub-menu {
+
+    width: 100px;
+    list-style: none;
+    position: absolute;
+    left: 100px;
+    top: 0px;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.sub-sub-sub-menu {
+    width: 100px;
+    list-style: none;
+    position: absolute;
+    left: 100px;
+    top: 0px;
+    opacity: 0;
+    height: auto;
+    visibility: hidden;
+    z-index: 1;
+}
+
+.main-menu > li:hover #sub-menu {
+    list-style: none;
+    opacity: 1;
+    visibility: visible;
+}
+.sub-menu > li:hover .sub-sub-menu {
     list-style: none;
     opacity: 1;
     visibility: visible;

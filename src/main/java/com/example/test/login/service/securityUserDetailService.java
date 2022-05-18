@@ -1,8 +1,8 @@
 package com.example.test.login.service;
 
 import com.example.test.login.security.securityUser;
-import com.example.test.user.entity.Users;
-import com.example.test.user.repository.userRepository;
+import com.example.test.user.jpa.entity.Users;
+import com.example.test.user.jpa.repository.userRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

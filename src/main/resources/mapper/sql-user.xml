@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.example.test.user.mybatis.mapper.userMapper">
+
+    <insert id="userSave" parameterType="com.example.test.user.mybatis.dto.UserDto">
+        INSERT INTO USERS
+        (USERNAME, EMAIL, JOIN_DATE, NAME, PW, "ROLE")
+        VALUES(#{username}, #{email} , sysdate, #{name}, #{pw}, #{role})
+
+    </insert>
+
+    <update id="userUpdate" parameterType="com.example.test.user.mybatis.dto.UserDto">
+        UPDATE USERS
+        SET EMAIL = #{email},  NAME= #{name}, PW = #{pw}, "ROLE"= #{role}
+        WHERE USERNAME=#{username}
+    </update>
+
+    <select id="userDetail" resultType="com.example.test.user.mybatis.dto.UserDto">
+
+        select * from USERS
+        where USERNAME = #{username}
+
+    </select>
+
+    <select id="userList" resultType="com.example.test.user.mybatis.dto.UserDto">
+
+        SELECT * FROM USERS where USERNAME LIKE '%' ||  #{searchText} || '%' OR NAME LIKE '%' ||  #{searchText} || '%'
+        order by JOIN_DATE Desc
+
+    </select>
+
+    <select id="findUsername" resultType="String">
+        select USERNAME from USERS
+    </select>
+
+
+    <delete id="deleteById">
+    DELETE FROM USERS
+        WHERE USERNAME = #{username}
+    </delete>
+</mapper>

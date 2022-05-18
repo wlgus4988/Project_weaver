@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.example.test.category.mybatis.mapper.boardCategoryMapper">
+
+    <select id="categoryList" resultType="com.example.test.category.mybatis.dto.CategoryDto">
+        SELECT * from CATEGORY
+        WHERE BOARD_NAME LIKE '%' ||  #{searchText} || '%'
+        order by Idx Desc
+    </select>
+
+    <select id="totalBoardCount" resultType="long">
+        SELECT COUNT(CATEGORY) FROM BOARD WHERE CATEGORY = '전체 게시판'
+    </select>
+
+    <insert id="boardListSave" parameterType="com.example.test.category.mybatis.dto.CategoryDto">
+
+        <selectKey keyProperty="idx" resultType="java.lang.Long" order="BEFORE">
+            select BOARD_CATE_SEQ.NEXTVAL from dual
+        </selectKey>
+
+        INSERT INTO CATEGORY
+        (IDX, BOARD_COUNT)
+        VALUES(#{idx}, #{boardName})
+
+    </insert>
+
+    <select id="findById" resultType="com.example.test.category.mybatis.dto.CategoryDto">
+        select * From CATEGORY
+        WHERE IDX = #{idx}
+    </select>
+
+    <update id="boardNameUpdate">
+        UPDATE BOARD SET CATEGORY = #{boardUpdateName} WHERE CATEGORY = #{boardName}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+
+        DELETE FROM CATEGORY
+        WHERE IDX = #{idx}
+
+    </delete>
+
+    <update id="boardCountUpdate">
+        UPDATE CATEGORY SET BOARD_COUNT = BOARD_COUNT+ 1 WHERE BOARD_NAME = #{boardName}
+    </update>
+
+    <select id="findAll" resultType="com.example.test.category.mybatis.dto.CategoryDto">
+        SELECT * from CATEGORY
+        order by Idx ASC
+    </select>
+
+</mapper>

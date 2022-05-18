@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.example.test.coupang.mybatis.mapper.CoupangFileMapper">
+
+    <select id="seq" resultType="long">
+        select COUPANG_FILE_SEQ.NEXTVAL from dual
+    </select>
+
+    <select id="findByIdx" resultType="com.example.test.coupang.mybatis.dto.CoupangFileDto">
+        SELECT * FROM COUPANG_FILES
+        WHERE PRODUCT_IDX = #{productIdx}
+    </select>
+    
+    <delete id="deleteById">
+        DELETE FROM COUPANG_FILES
+        WHERE IDX = #{idx}
+    </delete>
+
+    <insert id="saveFile" parameterType="com.example.test.coupang.mybatis.dto.CoupangFileDto">
+
+        INSERT INTO COUPANG_FILES
+        (IDX, CREATE_DATETIME, CREATOR_ID, FILE_SIZE, ORIGINAL_FILE_NAME, PRODUCT_IDX, STORED_FILE_PATH, MAIN_IMAGE)
+        VALUES(#{idx}, sysdate, #{creatorId}, #{fileSize}, #{originalFileName}, #{productIdx}, #{storedFilePath}, #{mainImage})
+
+    </insert>
+
+</mapper>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<meta charset="UTF-8">
+<title>Title</title>
+<link href="/css/styles.css" rel="stylesheet"/>
+
+<!-- include libraries(jQuery, bootstrap) -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<!-- include summernote css/js -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $('#productContents').summernote({
+            height: 300,                 // 에디터 높이
+            minHeight: null,             // 최소 높이
+            maxHeight: null,             // 최대 높이
+            focus: true,                  // 에디터 로딩후 포커스를 맞출지 여부
+            lang: "ko-KR",					// 한글 설정
+            placeholder: '최대 2048자까지 쓸 수 있습니다',	//placeholder 설정
+            callbacks: {	//여기 부분이 이미지를 첨부하는 부분
+                onImageUpload: function (files) {
+                    uploadSummernoteImageFile(files[0], this);
+                },
+                onPaste: function (e) {
+                    var clipboardData = e.originalEvent.clipboardData;
+                    if (clipboardData && clipboardData.items && clipboardData.items.length) {
+                        var item = clipboardData.items[0];
+                        if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+                            e.preventDefault();
+                        }
+                    }
+                }
+            }
+        });
+
+        <!--이미지 파일 업로드-->
+        function uploadSummernoteImageFile(file, el) {
+            data = new FormData();
+            data.append("file", file);
+            $.ajax({
+                data: data,
+                type: "POST",
+                url: "/uploadSummernoteImageFile",
+                contentType: false,
+                enctype: 'multipart/form-data',
+                processData: false,
+                success: function (data) {
+                    $(el).summernote('editor.insertImage', data.url);
+                }
+            });
+        }
+
+    });
+
+
+    $(document).ready(function () {
+        $(".check").click(function () {  // 여기서 .click은 체크박스의 체크를 뜻한다.
+            var str = "";  // 여러개가 눌렸을 때 전부 출력이 될 수 있게 하나의 객체에 담는다.
+            $(".check").each(function () {  // .each()는 forEach를 뜻한다.
+                if ($(this).is(":checked"))  // ":checked"를 이용하여 체크가 되어있는지 아닌지 확인한다.
+                    str += $(this).val() + " ";  // 체크된 객체를 str에 저장한다.
+            });
+            console.log(str); // #multiPrint에 체크된 원소를 출력한다.
+            document.getElementById("productType").value = str;
+        });
+    });
+   /* $(document).ready(function () {
+        $(".checkNew").on('click', function (e){  // 여기서 .click은 체크박스의 체크를 뜻한다.
+            console.log("실행");
+            var str = "";  // 여러개가 눌렸을 때 전부 출력이 될 수 있게 하나의 객체에 담는다.
+            $(".checkNew").each(function () {  // .each()는 forEach를 뜻한다.
+                if ($(this).is(":checked"))  // ":checked"를 이용하여 체크가 되어있는지 아닌지 확인한다.
+                    str += $(this).val() + " ";  // 체크된 객체를 str에 저장한다.
+            });
+            console.log(str); // #multiPrint에 체크된 원소를 출력한다.
+            document.getElementById("productType").value = str;
+            console.log(document.getElementById("productType").value);
+        });
+    });*/
+
+
+    function chk_file_type(obj) {
+        var file_kind = obj.value.lastIndexOf('.');
+        var file_name = obj.value.substring(file_kind + 1, obj.length);
+        var file_type = file_name.toLowerCase();
+
+
+        var check_file_type = ['jpg', 'gif', 'png', 'jpeg', 'bmp'];
+
+
+        if (check_file_type.indexOf(file_type) == -1) {
+            alert('이미지 파일만 선택할 수 있습니다.');
+            var parent_Obj = obj.parentNode
+            var node = parent_Obj.replaceChild(obj.cloneNode(true), obj);
+            document.getElementById("file").value = null;
+            return false;
+
+        }
+    }
+
+
+    $(document).ready(function () {
+
+        $("#cateDepth0").on('change', function (e) {
+            $("select#cateDepth1 option").not('[value="a"]').remove();
+            $("select#productCategoryNum option").not('[value="a"]').remove();
+            var depth = document.getElementById("cateDepth0").value;
+            $.ajax({
+                url: '/cate/productWrite/total',
+                data: {depth: depth},
+                type: "POST",
+                success: function (data) {
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                       $("#cateDepth1").append('<option value="' + data[i].idx + '">' + data[i].cateName + '</option');
+                    }
+                }
+            });
+        });
+
+        $("#cateDepth1").on('change', function (e) {
+            $("select#productCategoryNum option").not('[value="a"]').remove();
+            var depth = document.getElementById("cateDepth1").value;
+            $.ajax({
+                url: '/cate/productWrite/total',
+                data: {depth: depth},
+                type: "POST",
+                success: function (data) {
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                        $("#productCategoryNum").append('<option value="' + data[i].idx + '">' + data[i].cateName + '</option');
+                    }
+                }
+            });
+        });
+
+        $("#productCategoryNum").on('change', function (e) {
+           /* $("label#cateDepth2 option").not('[value="a"]').remove();*/
+            var depth = document.getElementById("productCategoryNum").value;
+            console.log(depth);
+            $.ajax({
+                url: '/cate/productWrite/total',
+                data: {depth: depth},
+                type: "POST",
+                success: function (data) {
+                    console.log(data);
+                    $("#type").empty();
+                    for (var i = 0; i < data.length; i++) {
+                        $("#type").append('<input type="checkbox" class="checkNew" name="productTypes"  value="' + data[i].idx +
+                            '" />\&nbsp;'+ data[i].cateName + '\&nbsp; &nbsp;');
+                    }
+                    $(".checkNew").on('click', function (e){  // 여기서 .click은 체크박스의 체크를 뜻한다.
+                        console.log("실행");
+                        var str = "";  // 여러개가 눌렸을 때 전부 출력이 될 수 있게 하나의 객체에 담는다.
+                        $(".checkNew").each(function () {  // .each()는 forEach를 뜻한다.
+                            if ($(this).is(":checked"))  // ":checked"를 이용하여 체크가 되어있는지 아닌지 확인한다.
+                                str += $(this).val() + " ";  // 체크된 객체를 str에 저장한다.
+                        });
+                        console.log(str); // #multiPrint에 체크된 원소를 출력한다.
+                        document.getElementById("productType").value = str;
+                        console.log(document.getElementById("productType").value);
+                    });
+                }
+            });
+        });
+    });
+
+</script>
+<header th:replace="fragments/menu :: menuFragment"></header>
+<div layout:fragment="content" style="padding-bottom: 100px;">
+    <div class="container" style="padding: 100px 1px 2px 3px;">
+        <div class="board_div" th:unless="${cateNum == 0}">
+
+            <h2 class="page-header" th:text="${cateName}+' 상품 등록'"></h2>
+
+            <form class="form-horizontal" id="frm" name="frm" method="POST"
+                  th:action="'/cate/productInsert/'+${cateNum}"
+                  enctype="multipart/form-data" onsubmit="return nullChk()">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">상품 이름</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="productName" name="productName" placeholder="Title">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">썸네일 이미지</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control" id="file" name="file"
+                               accept='image/jpeg,image/gif,image/png' onchange='chk_file_type(this)'>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">기타 이미지</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control" id="files" name="files"
+                               accept='image/jpeg,image/gif,image/png' onchange='chk_file_type(this)'
+                               multiple="multipart">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">배송</label>
+                    <div class="col-sm-10">
+                        <select id="delivery" name="delivery" class="form-control">
+                            <option value="일반배송" selected="selected">일반배송</option>
+                            <option value="로켓배송">로켓배송</option>
+                            <option value="로켓와우">로켓와우</option>
+                            <option value="제트배송">제트배송</option>
+                            <option value="무료배송">무료배송</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">상품 가격</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="productPrice" name="productPrice"
+                               placeholder="price">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">할인</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" style="width:120px" id="discount" name="discount"
+                               placeholder="discount">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">색상</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="optionColor"
+                               name="optionColor" placeholder="color -> ,로 구분하여 작성해주세요">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">사이즈</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="optionSize"
+                               name="optionSize" placeholder="size -> ,로 구분하여 작성해주세요">
+                    </div>
+                </div>
+
+                <div class="form-group" th:unless="${cateNum == 0}">
+                    <label class="col-sm-2 control-label">상품 타입</label>
+                    <div class="col-sm-10">
+                        <label><input type="checkbox" class="check" name="productTypes" th:each="vo : ${cateMemberList}"
+                                      th:value="${vo.idx}" th:utext="'&nbsp;'+ ${vo.cateName}+'&nbsp; &nbsp;'"/></label>
+                    </div>
+                </div>
+                <input type="hidden" name="productType" id="productType" value="">
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">상품 본문</label>
+                    <div class="col-sm-10">
+                    <textarea id="productContents" name="productContents"
+                              style="width: 100%; height: 300px;"></textarea>
+                    </div>
+                </div>
+
+                <input type="hidden" name="cateName" id="cateName" th:value="${cateName}">
+
+                <div class="pull-right">
+                    <input type="submit" id="submit" value="저장" onclick="return confirm('글을 등록하시겠습니까?');"
+                           class="btn btn-primary btn-success boardAddBtn"
+                           style="float:right; padding:10px,10px,25px,25px; margin-right: 10px; background-color: white; color:black">
+                </div>
+
+            </form>
+            <button class="btn btn-primary btn-success boardAddBtn" ; style="background-color: white; color:black"><a
+                    th:href="'/cate/List/'+${cateNum}">취소</a></button>
+
+        </div>
+
+
+        <div class="board_div" th:if="${cateNum == 0}">
+
+            <h2 th:if="${cateNum == 0}" class="page-header" text="상품 등록"></h2>
+
+            <form class="form-horizontal" id="frm" name="frm" method="POST"
+                  th:action="'/cate/productInsert/'+${cateNum}"
+                  enctype="multipart/form-data" onsubmit="return nullChk()">
+
+                <div class="form-group" th:if="${cateNum == 0}">
+                    <label class="col-sm-2 control-label">상품 카테고리</label>
+                    <div class="col-sm-10">
+                        <select id="cateDepth0"
+                                name="cateDepth0" class="form-control" style="width: 50%">
+                            <option value="a">==카테고리 선택==</option>
+                            <option th:each="i : ${session.CateList}" th:if="${i.deleteYN == 'N'}"
+                                    th:value="${i.idx}" th:text="${#strings.trim(i.cateName)}"></option>
+                        </select>
+
+                        <select id="cateDepth1"
+                                name="cateDepth1" class="form-control" style="width: 50%">
+                            <option value="a">==카테고리 선택==</option>
+                            <!--<option th:each="i : ${session.CateList1}" th:if="${i.deleteYN == 'N'}"
+                                    th:value="${i.idx}" th:text="${#strings.trim(i.cateName)}"></option>-->
+                        </select>
+                        <select id="productCategoryNum"
+                                name="productCategoryNum" class="form-control" style="width: 50%">
+                            <option value="a">==카테고리 선택==</option>
+                            <!--<option th:each="i : ${session.CateList1}" th:if="${i.deleteYN == 'N'}"
+                                    th:value="${i.idx}" th:text="${#strings.trim(i.cateName)}"></option>-->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">상품 이름</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="productName" name="productName" placeholder="Title">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">썸네일 이미지</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control" id="file" name="file"
+                               accept='image/jpeg,image/gif,image/png' onchange='chk_file_type(this)'>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">기타 이미지</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control" id="files" name="files"
+                               accept='image/jpeg,image/gif,image/png' onchange='chk_file_type(this)'
+                               multiple="multipart">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">배송</label>
+                    <div class="col-sm-10">
+                        <select id="delivery" name="delivery" class="form-control">
+                            <option value="일반배송" selected="selected">일반배송</option>
+                            <option value="로켓배송">로켓배송</option>
+                            <option value="로켓와우">로켓와우</option>
+                            <option value="제트배송">제트배송</option>
+                            <option value="무료배송">무료배송</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">상품 가격</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="productPrice" name="productPrice"
+                               placeholder="price">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">할인</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" style="width:120px" id="discount" name="discount"
+                               placeholder="discount">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">색상</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="optionColor"
+                               name="optionColor" placeholder="color">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">사이즈</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="optionSize"
+                               name="optionSize" placeholder="size">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                     <label class="col-sm-2 control-label">상품 타입</label>
+                     <div class="col-sm-10">
+                         <label id ="type">
+
+                         </label>
+                     </div>
+                 </div>
+                <input type="hidden" name="productType" id="productType" value="">
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">상품 본문</label>
+                    <div class="col-sm-10">
+                    <textarea id="productContents" name="productContents"
+                              style="width: 100%; height: 300px;"></textarea>
+                    </div>
+                </div>
+
+
+                <!--  <input th:unless="${idx == 0}" type="hidden" id="pBoardIdx" name="pBoardIdx"
+                         th:value="${board.boardIdx}">-->
+                <input type="hidden" name="cateName" id="cateName" th:value="${cateName}">
+
+                <div class="pull-right">
+                    <input type="submit" id="submit" value="저장" onclick="return confirm('글을 등록하시겠습니까?');"
+                           class="btn btn-primary btn-success boardAddBtn"
+                           style="float:right; padding:10px,10px,25px,25px; margin-right: 10px; background-color: white; color:black">
+                </div>
+
+            </form>
+            <button class="btn btn-primary btn-success boardAddBtn" ; style="background-color: white; color:black"><a
+                    href="/home">취소</a></button>
+
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+
+    var pBoardIdx = document.getElementById("pBoardIdx").value;
+    console.log(pBoardIdx);
+
+
+    function nullChk() {
+        var productContents = document.getElementById("productContents").value;
+        var productName = document.getElementById("productName").value;
+        var file = document.getElementById("file").value
+        var productPrice = document.getElementById("productPrice").value;
+        var productStock = document.getElementById("productStock").value;
+        var optionColor = document.getElementById("optionColor").value;
+        var optionSize = document.getElementById("optionSize").value;
+        var productType = document.getElementById("productType").value;
+
+
+        if (!productContents || !productName || !productPrice || !productStock || !optionColor || !optionSize) {
+            alert('공백 없이 입력해주세요')
+            return false;
+        } else if (!file) {
+            alert('썸네일 이미지를 등록해주세요')
+            return false;
+        } else if (!productType) {
+            alert('타입을 하나 이상 선택해주세요')
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+</script>
+</html>

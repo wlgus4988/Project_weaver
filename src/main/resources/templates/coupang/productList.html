@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:text-align="http://www.w3.org/1999/xhtml">
+
+<link href="/css/styles.css" rel="stylesheet"/>
+<header th:replace="fragments/menu :: menuFragment"></header>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<script>
+
+    Object.defineProperty(Array.prototype, 'chunk_inefficient', {
+        value: function (chunkSize) {
+            var array = this;
+            return [].concat.apply([],
+                array.map(function (elem, i) {
+                    return i % chunkSize ? [] : [array.slice(i, i + chunkSize)];
+                })
+            );
+        }
+    });
+
+
+
+
+
+    /*var a = '[[${cateMemberList}]]';
+
+    //var b = a.chunk_inefficient(3);
+    console.log(a.chunk_inefficient(3));
+
+    function f() {
+
+    }
+
+    function search(idx, proCateNum) {
+        $.ajax({
+            url: '/cate/List/' + idx,
+            data: {proCateNum: proCateNum},
+            type: "POST",
+            success: function (data) {
+                location.href = '/cate/List/' + idx;
+            }
+        });
+    }*/
+
+
+</script>
+
+<div layout:fragment="content" style="padding: 100px 1px 2px 3px;">
+
+    <div class="container">
+        <br>
+        <br>
+        <div>
+            <span class="h6" th:text="${pPCateName}+ ' > ' +${pCateName} + ' > '"></span><a class="h6"
+                                                                                            th:href="'/cate/List/'+${cateNum}"
+                                                                                            th:text="${cateName}"></a>
+        </div>
+        <br>
+        <br>
+        <table class="table table-hover">
+            <td th:if="${#lists.size(list)} > 0" th:each="vo : ${cateList}">
+                <form method="GET" th:action="@{/cate/List/{cateIdx}(cateIdx = ${cateNum})}">
+                    <input type="hidden" name="proCateNum" id="proCateNum" th:value="${vo.idx}">
+                    <button class="btn btn-light me-2" sytle="background-color:#4a85d4;" type="submit"
+                            th:text="${vo.cateName}"></button>
+                </form>
+            </td>
+        </table>
+        <!--<div>
+            <span th:each="vo : ${cateList}">
+                    <button class="btn btn-light me-2" sytle="background-color:#4a85d4;" type="button"
+                            th:text="${vo.cateName}"></button>
+            </span>
+        </div>-->
+        <br>
+        <br>
+        <table class="table table-hover" style="text-align:center; table-layout:fixed">
+            <colgroup>
+                <col width="20%"/>
+                <col width="15%"/>
+                <col width="15%"/>
+                <col width="15%"/>
+                <col width="*"/>
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col">상품명</th>
+                <th scope="col">가격</th>
+                <th scope="col">배송</th>
+                <th scope="col">작성자</th>
+                <th scope="col">이미지</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.size(list)} > 0" th:each="vo, i : ${list}" style="height: 200px">
+
+                <td>
+                    <form th:action="'/cate/Product/'+${cateNum}+'/'+${vo.productIdx}" method="POST">
+                        <input type="hidden" name="page" id="page" th:value="${list.pageable.pageNumber}">
+                        <input type="hidden" name="search" id="search" th:value="${param.searchText}">
+                        <input type="submit" th:value="${vo.productName}"
+                               style="overflow:hidden;white-space:pre;text-overflow:ellipsis;text-decoration : underline;
+                               border-color: WHITE;
+                               border-style: hidden;
+                               background-color: transparent; color:#4a85d4">
+                    </form>
+                </td>
+                <td th:if="${vo.discount == 0}" th:text="${vo.productPrice}"></td>
+                <td th:unless="${vo.discount == 0}"
+                    th:utext="${#numbers.formatInteger(vo.productPrice - (vo.productPrice/100*vo.discount), 3,'COMMA')} + '원 <pre><pre>' + ${vo.discount} + '% 할인'"></td>
+                <td th:text="${vo.delivery}" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
+                <td th:text="${vo.username}" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
+               <!--<td><img src="C:/Users/weaver-gram-0014/AppData/Local/Temp/tomcat-docbase.14040.8440067514448869109/20220427/463883304877200.jpg" alt="등록된 이미지가 없습니다" style="width: 200px; height: 200px;"/>
+                </td>-->
+                <!--<td><img th:src="'../../../'+${vo.imageSrc}" alt="등록된 이미지가 없습니다" style="width: 200px; height: 200px;"/>
+                </td>-->
+                <td><img th:src="${vo.imageSrc}" alt="등록된 이미지가 없습니다" style="width: 200px; height: 200px;"/>
+                </td>
+            </tr>
+            <tr th:if="${#lists.size(list) == 0}">
+                <td colspan="5">조회된 결과가 없습니다.</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <nav aria-label="Page navigation example" th:if="${num > 0}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"
+                    th:classappend="${1 == list.pageable.pageNumber + 1} ? 'disabled'">
+                    <a class="page-link" href="#"
+                       th:href="@{/cate/List/{cateIdx}(cateIdx = ${cateNum},page=${list.pageable.pageNumber - 1},searchText=${param.searchText})}"
+                       tabindex="-1" aria-disabled="true">&lt;</a>
+                </li>
+                <li class="page-item"
+                    th:classappend="${i == list.pageable.pageNumber + 1} ? 'disabled'"
+                    th:each="i : ${#numbers.sequence(startPage, endPage)}"><a
+                        class="page-link" href="#"
+                        th:href="@{/cate/List/{cateIdx}(cateIdx =${cateNum},page=${i - 1}, searchText = ${param.searchText})}"
+                        th:text="${i}">1</a></li>
+                <li class="page-item"
+                    th:classappend="${list.totalPages == list.pageable.pageNumber + 1} ? 'disabled'">
+                    <a class="page-link" href="#"
+                       th:href="@{/cate/List/{cateIdx}(cateIdx =${cateNum}, page=${list.pageable.pageNumber + 1}, searchText=${param.searchText})}">&gt;</a>
+                </li>
+            </ul>
+        </nav>
+        <form action="/cate/productWrite" method="POST" th:if="${#strings.equals(session.role,'ROLE_ADMIN')}">
+            <input type="hidden" name="cateIdx" id="cateIdx" th:value="${cateNum}">
+            <button type="submit"
+                    class="btn btn-outline-primary">상품
+                등록하기
+            </button>
+        </form>
+      <!--  <button  type="submit"
+                class="btn btn-outline-primary"><a th:href="@{/cate/productWrite/{cateIdx}(cateIdx = ${cateNum})}"></a>
+        </button>-->
+
+        <form class="d-flex" method="GET" th:action="@{/cate/List/{cateIdx}(cateIdx = ${cateNum})}"
+              style="padding-bottom: 100px">
+            <input class="form-control me-2" type="search" placeholder="Search"
+                   id="searchText" name="searchText" aria-label="Search"
+                   style="width: 230px" th:value="${param.searchText}">
+            <button class="btn btn-light me-2" sytle="background-color:#4a85d4;" type="submit">Search</button>
+        </form>
+
+    </div>
+</div>
+</html>

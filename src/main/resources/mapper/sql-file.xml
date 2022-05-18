@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.example.test.board.mybatis.mapper.fileMapper">
+
+    <select id="findAllByBoardIdx" parameterType="long" resultType="com.example.test.board.mybatis.dto.FileDto">
+        select * from files where BOARD_IDX = #{boardIdx}
+    </select>
+
+    <select id="seq" resultType="long">
+       select FILE_SEQ.NEXTVAL from dual
+    </select>
+
+    <select id="findByIdx" parameterType="long" resultType="com.example.test.board.mybatis.dto.FileDto">
+        select * from files where IDX = #{idx}
+    </select>
+
+    <delete id="deleteById" parameterType="long" >
+        DELETE FROM FILES
+        WHERE IDX = #{idx}
+    </delete>
+
+    <insert id="fileSave" parameterType="com.example.test.board.mybatis.dto.FileDto">
+        INSERT INTO "C##HR".FILES
+        (IDX, BOARD_IDX, CREATED_DATETIME, CREATOR_ID, FILE_SIZE, ORIGINAL_FILE_NAME, STORED_FILE_PATH)
+        VALUES(#{idx}, #{boardIdx}, sysdate, #{creatorId}, #{fileSize}, #{originalFileName}, #{storedFilePath})
+
+    </insert>
+</mapper>
+

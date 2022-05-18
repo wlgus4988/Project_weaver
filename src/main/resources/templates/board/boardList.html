@@ -68,7 +68,7 @@
                 <td th:text="${vo.hitCnt}"></td>
                 <td th:text="${vo.username}"
                     style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
-                <td th:text="${vo.createDatetime}"
+                <td th:text="${#dates.format(vo.createDatetime, 'yyyy-MM-dd')}"
                     style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
                 <td><img th:if="${vo.filesCount != 0} and ${vo.deleteYN == 'N'}" src="/img/file.jpg"
                          style="width:20px; height:auto; vertical-align: center; "/></td>

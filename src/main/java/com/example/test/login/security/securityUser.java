@@ -1,6 +1,6 @@
 package com.example.test.login.security;
 
-import com.example.test.user.entity.Users;
+import com.example.test.user.jpa.entity.Users;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 

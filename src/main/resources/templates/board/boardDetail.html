@@ -49,7 +49,7 @@
                 <th scope="row">작성자</th>
                 <td th:text="${boards.username}"></td>
                 <th scope="row">작성일</th>
-                <td th:text="${boards.createDatetime}"></td>
+                <td th:text="${#dates.format(boards.createDatetime,'yyyy-MM-dd HH:mm')}"></td>
             </tr>
             <tr>
                 <th scope="row">제목</th>
@@ -75,7 +75,7 @@
         </table>
 
 
-        <table class="table table-hover" style="text-align: center;" th:if="${deleteYN} == 'Y'">
+        <table class="table table-hover" style="text-align: center;" th:if="${idx} != 0 and ${deleteYN} == 'Y'">
             <tbody>
             <tr>
                 <td style="font-size: 30px"> 삭제된 게시물입니다</td>
@@ -104,7 +104,7 @@
                     <th scope="row">작성자</th>
                     <td th:text="${board.username}"></td>
                     <th scope="row">작성일</th>
-                    <td th:text="${board.createDatetime}"></td>
+                    <td th:text="${#dates.format(board.createDatetime,'yyyy-MM-dd HH:mm')}"></td>
                 </tr>
                 <tr>
                     <th scope="row">제목</th>

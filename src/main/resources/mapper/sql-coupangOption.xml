@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.example.test.coupang.mybatis.mapper.OptionMapper">
+    <select id="findByProductIdx" resultType="com.example.test.coupang.mybatis.dto.OptionDto">
+        SELECT * FROM COUPANG_PRODUCT_OPTION
+        WHERE PRODUCT_IDX = #{productIdx}
+        Order By OPTION_COLOR Asc, OPTION_SIZE Desc
+    </select>
+
+    <update id="stockCount">
+
+        UPDATE COUPANG_PRODUCT_OPTION SET PRODUCT_STOCK = PRODUCT_STOCK - 1
+        WHERE PRODUCT_IDX = #{productIdx} AND OPTION_COLOR= #{optionColor} AND OPTION_SIZE = #{optionSize}
+
+    </update>
+
+    <select id="stock" resultType="long">
+        Select PRODUCT_STOCK from COUPANG_PRODUCT_OPTION
+        where  PRODUCT_IDX = #{productIdx} AND OPTION_COLOR= #{optionColor} AND OPTION_SIZE = #{optionSize}
+    </select>
+
+    <insert id="optionSave" parameterType="com.example.test.coupang.mybatis.dto.OptionDto">
+        INSERT INTO "C##HR".COUPANG_PRODUCT_OPTION
+        (IDX, OPTION_COLOR, OPTION_SIZE, PRODUCT_IDX, PRODUCT_STOCK)
+        VALUES(#{idx}, #{optionColor}, #{optionSize}, #{productIdx}, #{productStock})
+
+    </insert>
+    <select id="seq" resultType="long">
+        select COUPANG_OPTION_SEQ.NEXTVAL from dual
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM COUPANG_PRODUCT_OPTION
+        WHERE IDX = #{optionIdx}
+    </delete>
+
+</mapper>

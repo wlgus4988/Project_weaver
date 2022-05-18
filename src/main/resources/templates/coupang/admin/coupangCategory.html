@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<link href="/css/styles.css" rel="stylesheet"/>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<header th:replace="fragments/menu :: menuFragment"></header>
+<script>
+    // ajax로 값 전달
+
+
+    function insert(pIdx, searchText, page) {
+        var userInput = prompt("등록할 카테고리 이름을 입력해주세요", "");
+        console.log(userInput);
+        if (userInput.length != 0) {
+            $.ajax({
+                url: '/admin/CateInsert',
+                data: {CateName: userInput, pIdx: pIdx},
+                type: "POST",
+                success: function (data) {
+                    if (searchText == null) {
+                        location.href = '/admin/CateList?page=' + page + '&searchText=';
+                    } else {
+                        location.href = '/admin/CateList?page=' + page + '&searchText=' + searchText;
+                    }
+                }
+            });
+            alert("등록되었습니다 !");
+        } else {
+            alert("카테고리 이름을 입력하지 않았습니다");
+        }
+    }
+
+    function update(idx, cateName, searchText, page) {
+        var userInput = prompt("수정할 카테고리 이름을 입력해주세요", cateName);
+        if (userInput != null) {
+            $.ajax({
+                url: '/admin/CateUpdate',
+                data: {CateName: userInput, idx: idx},
+                type: "POST",
+                success: function (data) {
+                    if (searchText == null) {
+                        location.href = '/admin/CateList?page=' + page + '&searchText=';
+                    } else {
+                        location.href = '/admin/CateList?page=' + page + '&searchText=' + searchText;
+                    }
+                }
+            });
+            alert("수정되었습니다 !");
+        } else{
+            alert("카테고리 이름을 입력하지 않았습니다");
+        }
+    }
+
+    function Delete(idx, searchText, page) {
+        var userInput = confirm("삭제하시겠습니까 ?");
+        if (userInput == true) {
+            $.ajax({
+                url: '/admin/CateDelete',
+                data: {idx: idx},
+                type: "POST",
+                success: function (data) {
+                    if (searchText == null) {
+                        location.href = '/admin/CateList?page=' + page + '&searchText=';
+                    } else {
+                        location.href = '/admin/CateList?page=' + page + '&searchText=' + searchText;
+                    }
+                }
+            });
+            alert("삭제되었습니다 !");
+        }else{
+            alert("취소되었습니다");
+        }
+    }
+
+
+
+
+</script>
+<div layout:fragment="content" style="padding: 100px 1px 2px 3px;">
+
+    <div class="container">
+        <h2>카테고리 목록</h2>
+        <div style="font-size: 18px;font-weight: 600;" th:text="'총 : '+ ${num} + '개'">
+            <br>
+        </div>
+        <table class="table table-hover" style="text-align:center; table-layout:fixed">
+
+            <colgroup>
+                <col width="18%"/>
+                <col width="*%"/>
+                <col width="15%"/>
+                <col width="10%"/>
+                <col width="10%"/>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>카테고리 번호</th>
+                <th>게시판 이름</th>
+                <th>등록</th>
+                <th>수정</th>
+                <th>삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.size(list)} > 0" th:each=" i , list : ${list}">
+                <td style= "white-space :pre;" th:text="${num - (list.count + page) + 1}"></td>
+                <td style = "text-align :left; white-space :pre;"
+                    th:styleappend="${i.depth == 0 ? 'font-weight : 900;' : (i.depth == 1 ? 'font-weight : 600; padding-left: 3em; ' : (i.depth == 2 ? 'font-weight : 400; padding-left: 6em;':'font-weight : 200;padding-left: 9em;'))}"
+                    th:text="${i.depth == 0 ? i.cateName : '->'+ i.cateName}"></td>
+
+                <td><input type="submit" style="color: #4a85d4;border-style: none;background-color: transparent; text-decoration: underline;" th:data-parameter1="${i.idx}" th:data-parameter2="${session.searchText}" th:data-parameter3="${session.page}"
+                           onclick="insert(this.getAttribute('data-parameter1'),this.getAttribute('data-parameter2'),this.getAttribute('data-parameter3'))"
+                           value="하위 카테고리 등록"></td>
+                <td><input type="submit"
+                           style="color: #4a85d4;border-style: none;background-color: transparent; text-decoration: underline;"
+                           th:data-parameter1="${i.idx}" th:data-parameter2="${i.cateName}"
+                           th:data-parameter3="${session.searchText}" th:data-parameter4="${session.page}"
+                           onclick="update(this.getAttribute('data-parameter1'),this.getAttribute('data-parameter2'),this.getAttribute('data-parameter3'),this.getAttribute('data-parameter4'))"
+                           value="수정"></td>
+                <td><input type="submit"
+                           style="color: #4a85d4;border-style: none;background-color: transparent; text-decoration: underline;"
+                           th:data-parameter1="${i.idx}" th:data-parameter2="${session.searchText}" th:data-parameter3="${session.page}"
+                           onclick="Delete(this.getAttribute('data-parameter1'),this.getAttribute('data-parameter2'),this.getAttribute('data-parameter3'))"
+                           value="삭제"></td>
+            </tr>
+            <tr th:if="${num == 0}">
+                <td colspan="5">조회된 결과가 없습니다.</td>
+            </tr>
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation example" th:if="${num > 0}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"
+                    th:classappend="${1 == list.pageable.pageNumber + 1} ? 'disabled'">
+                    <a class="page-link" href="#"
+                       th:href="@{/admin/CateList(page=${list.pageable.pageNumber - 1},searchText=${param.searchText})}"
+                       tabindex="-1" aria-disabled="true">&lt;</a>
+                </li>
+                <li class="page-item"
+                    th:classappend="${i == list.pageable.pageNumber + 1} ? 'disabled'"
+                    th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                    <a class="page-link" href="#"
+                       th:href="@{/admin/CateList(page=${i - 1}, searchText = ${param.searchText})}"
+                       th:text="${i}">1</a></li>
+                <li class="page-item"
+                    th:classappend="${list.totalPages == list.pageable.pageNumber + 1} ? 'disabled'">
+                    <a class="page-link" href="#"
+                       th:href="@{/admin/CateList(page=${list.pageable.pageNumber + 1}, searchText=${param.searchText})}">&gt;</a>
+                </li>
+            </ul>
+        </nav>
+        <div>
+            <button class="btn btn-outline-primary" th:data-parameter1="${session.searchText}" th:data-parameter2="${session.page}" onclick="insert(0,this.getAttribute('data-parameter1'),this.getAttribute('data-parameter2'))" >새 카테고리 등록</button>
+        </div>
+
+        <form class="d-flex" method="GET" th:action="@{/admin/CateList}" style="padding-bottom: 100px">
+            <input class="form-control me-2" type="search" placeholder="Search"
+                   id="searchText" name="searchText" aria-label="Search"
+                   style="width: 230px" th:value="${param.searchText}">
+            <button class="btn btn-light me-2" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+</html>

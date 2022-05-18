@@ -4,7 +4,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav" style="min-height: 100px;"
      th:fragment="menuFragment">
     <div class="container" th:if="${#strings.equals(session.role,'ROLE_MEMBER')}">
-        <a class="navbar-brand" href="#page-top" style="font-size: 28px">게시판</a>
+        <a class="navbar-brand" href="#" style="font-size: 28px">게시판</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
@@ -12,18 +12,39 @@
             <i class="fas fa-bars ms-1"></i>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0" id="main-menu">
+            <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0 main-menu">
                 <li class="nav-item"><a class="nav-link active"
                                         aria-current="page" href="/home">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="/board/boardList/전체 게시판">전체 게시판</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">기타게시판</a>
-                    <ul style="border-color: #797f84;background-color: #797f84;" id="sub-menu">
-                        <li th:each="li : ${session.CList}"><a th:href="'/board/boardList/'+ ${li.boardName}" class="nav-link" th:text="${li.boardName}"></a></li>
+                    <ul style="border-color: #797f84;background-color: #797f84;" class="sub-menu">
+                        <li th:each="li : ${session.CList}"><a th:href="'/board/boardList/'+ ${li.boardName}"
+                                                               class="nav-link" th:text="${li.boardName}"></a></li>
+                    </ul>
+                </li>
+                <li><a class="nav-link" href="#" style="color: white">상품</a>
+                    <ul style="border-color: #797f84;background-color: #797f84;" class=" sub-menu">
+                        <li th:each="li : ${session.CateList}"><a href="#" class="nav-link" style="font-weight: bold"
+                                                                  th:if="${#strings.equals(li.deleteYN,'N')}" th:text="${li.cateName}"></a>
+                            <ul style="border-color: #c7cfd4; background-color: #c7cfd4;" class="sub-sub-menu">
+                                <li th:if="${li.idx == li1.PIdx}" th:each="li1 : ${session.CateList1}"><a href="#" th:if="${#strings.equals(li1.deleteYN,'N')}"
+                                                                                                          th:text="${li1.cateName}" style="color: black; font-weight: bold" class="nav-link"></a>
+                                    <ul style="border-color: #e8f0f5; background-color: #e8f0f5;" class="sub-sub-sub-menu">
+                                        <li th:if="${li1.idx == li2.PIdx}" th:each="li2 : ${session.CateList2}"><a class="nav-link" style="color: black; font-weight: bold" th:if="${#strings.equals(li2.deleteYN,'N')}"
+                                                                                                                   th:href="'/cate/List/'+${li2.idx}"
+                                                                                                                   th:text="${li2.cateName}"></a>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
             </ul>
-        </div> &nbsp;&nbsp;&nbsp;
-        <a th:href="@{/user/userDetail/{username}(username=${session.username})}" th:text="${session.username}+'님'"></a>
+        </div>
+        &nbsp;
+        &nbsp;
+        <a th:href="@{/user/userDetail/{username}(username=${session.username})}"
+           th:text="${session.username}+'님'"></a>
         &nbsp;&nbsp;&nbsp;
         <button class="btn btn-outline-danger btn-sm" type="button">
             <a th:href="@{/login/logout}" class="text-white">로그아웃</a>
@@ -33,21 +54,46 @@
     <div class="container" th:if="${#strings.equals(session.role,'ROLE_ADMIN')}">
         <a class="navbar-brand" href="#page-top" style="font-size: 28px">게시판</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
             Menu
             <i class="fas fa-bars ms-1"></i>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+            <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0 main-menu" >
                 <li class="nav-item"><a class="nav-link active"
                                         aria-current="page" href="/home">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="/admin/boardList">게시판 관리</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admin/boardList">게시판 관리</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="/admin/CateList">상품 카테고리
+                    관리</a></li>
+                <li>
+                <li><a class="nav-link" href="#" style="color: white">상품</a>
+                    <ul style="border-color: #797f84;background-color: #797f84;" class=" sub-menu">
+                        <li th:each="li : ${session.CateList}"><a href="#" class="nav-link" style="font-weight: bold"
+                                                                  th:if="${#strings.equals(li.deleteYN,'N')}" th:text="${li.cateName}"></a>
+                            <ul style="border-color: #c7cfd4; background-color: #c7cfd4;" class="sub-sub-menu">
+                                <li th:if="${li.idx == li1.PIdx}" th:each="li1 : ${session.CateList1}"><a href="#" th:if="${#strings.equals(li1.deleteYN,'N')}"
+                                                                                                          th:text="${li1.cateName}" style="color: black; font-weight: bold" class="nav-link"></a>
+                                    <ul style="border-color: #e8f0f5; background-color: #e8f0f5;" class="sub-sub-sub-menu">
+                                        <li th:if="${li1.idx == li2.PIdx}" th:each="li2 : ${session.CateList2}"><a class="nav-link" style="color: black; font-weight: bold" th:if="${#strings.equals(li2.deleteYN,'N')}"
+                                                                                                                   th:href="'/cate/List/'+${li2.idx}"
+                                                                                                                   th:text="${li2.cateName}"></a>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="/cate/productWrite">전체 상품등록</a></li>
+                &nbsp;
                 <li class="nav-item"><a class="nav-link"
                                         href="/user/userList/admin">사용자
                     목록</a></li>
             </ul>
         </div> &nbsp;&nbsp;&nbsp;
+        &nbsp;
         <button class="btn btn-outline-danger btn-sm" type="button">
             <a th:href="@{/login/logout}" class="text-white">로그아웃</a>
         </button>
@@ -57,7 +103,7 @@
 
 <script type="text/javascript">
     function t() {
-        var userInput = prompt("추가할 게시판 명을 입력해주세요" + "");
+        var userInput = prompt("추가할 게시판 명을 입력해주세요" , "");
         if (userInput == null) {
             return false;
         } else {

@@ -50,7 +50,7 @@
                 <td th:text="${vo.name}" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
                 <td th:text="${vo.email}" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
                 <td th:text="${vo.role}" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
-                <td th:text="${vo.joinDate}" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
+                <td th:text="${#dates.format(vo.joinDate,'yyyy-MM-dd HH:mm')}" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></td>
             </tr>
             <tr th:if="${num == 0}">
                 <td colspan="6">조회된 결과가 없습니다.</td>
