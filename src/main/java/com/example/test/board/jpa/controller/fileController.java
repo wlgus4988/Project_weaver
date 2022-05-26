@@ -57,7 +57,6 @@ public class fileController {
             Resource resource = new InputStreamResource(Files.newInputStream(filePath)); // 파일 resource 얻기
 
             //File file = new File(path);
-
             HttpHeaders headers = new HttpHeaders();
             String fileName = URLEncoder.encode(filerepository.findByIdx(idx).getOriginalFileName(), "UTF-8");
             headers.setContentDisposition(ContentDisposition.builder("attachment").filename(fileName).build());  // 다운로드 되거나 로컬에 저장되는 용도로 쓰이는지를 알려주는 헤더
